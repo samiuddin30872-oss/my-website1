@@ -1,4 +1,4 @@
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import{SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY}from"./supabase.js";
 const supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const form=document.querySelector("#complaintForm"),result=document.querySelector("#result");
@@ -16,5 +16,5 @@ if(error){result.textContent="Complaint error: "+error.message;return}
 result.innerHTML=`✅ Complaint Number: <b>${no}</b><br>इसे सुरक्षित रखें।`;form.reset()});
 document.querySelector("#statusForm").addEventListener("submit",async e=>{e.preventDefault();
 const no=document.querySelector("#statusNo").value.trim().toUpperCase();
-const{data,error}=await supabase.from("complaints").select("complaint_number,status,service,created_at").eq("complaint_number",no).maybeSingle();
-document.querySelector("#statusResult").innerHTML=error?`❌ ${error.message}`:data?`✅ ${data.complaint_number}<br>Status: <b>${data.status}</b><br>Service: ${data.service}`:"❌ Complaint नहीं मिली।"});
+const{data,error}=await supabase.from("complaints").select("complaint_number,status,service,creater>Status: <b>${data.status}</b><br>Service: ${data.service}`:"❌ Complaint नहीं मिली।"});
+  

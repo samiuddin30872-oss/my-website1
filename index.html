@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="hi">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Raja Refrigeration</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="wrap nav"><strong>❄️ Raja Refrigeration</strong>
+<nav><a href="#services">Services</a><a href="#complaint">Complaint</a><a href="#status">Status</a><a href="#contact">Contact</a></nav></div></header>
+<section class="hero"><div class="wrap"><h1>AC & Home Appliance Repair</h1><p>AC, Refrigerator और Washing Machine repair/service के लिए online complaint दर्ज करें।</p>
+<a class="btn" href="#complaint">📝 Complaint करें</a><a class="btn wa" href="https://wa.me/919548404815" target="_blank">WhatsApp</a><a class="btn call" href="tel:+917017672535">Call Now</a></div></section>
+<section id="services"><div class="wrap"><h2>हमारी Services</h2><div class="grid">
+<article><div class="icon">❄️</div><h3>AC Repair</h3><p>Cooling, gas, installation और repair.</p></article>
+<article><div class="icon">🧺</div><h3>Washing Machine</h3><p>जांच और repair service.</p></article>
+<article><div class="icon">🧊</div><h3>Refrigerator Repair</h3><p>Cooling और refrigerator repair.</p></article>
+</div></div></section>
+<section id="complaint"><div class="wrap"><h2>📝 Complaint दर्ज करें</h2><form id="complaintForm">
+<label>नाम<input id="name" required></label><label>मोबाइल नंबर<input id="phone" type="tel" required></label>
+<label>Service<select id="service" required><option value="">चुनें</option><option>AC Repair</option><option>Washing Machine Repair</option><option>Refrigerator Repair</option><option>Other</option></select></label>
+<label>समस्या<textarea id="problem" required></textarea></label><label>Photo<input id="photo" type="file" accept="image/*"></label>
+<label>Address<textarea id="address"></textarea></label><button class="btn" type="submit">Complaint Submit करें</button><div id="result"></div>
+</form></div></section>
+<section id="status"><div class="wrap"><h2>🔎 Complaint Status</h2><form id="statusForm"><input id="statusNo" placeholder="RR-123456" required><button class="btn">Status देखें</button><div id="statusResult"></div></form></div></section>
+<section id="contact"><div class="wrap"><h2>📞 Contact</h2><p><strong>Raja Refrigeration</strong></p><p>WhatsApp: 9548404815</p><p>Call: +91 7017672535</p>
+<a class="btn" href="https://maps.app.goo.gl/toDwwcBSrZZsEdza8" target="_blank">📍 Google Maps</a></div></section>
+<footer>© 2026 Raja Refrigeration</footer>
+<script type="module" src="app.js"></script></body></html>

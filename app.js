@@ -19,71 +19,86 @@ if (form) {
 
     result.textContent = "Complaint submit हो रही है...";
 
-    const complaintNumber = generateComplaintNumber();
+    try {
+      const complaintNumber = generateComplaintNumber();
 
-    const name = document.querySelector("#name")?.value.trim();
-    const phone = document.querySelector("#phone")?.value.trim();
-    const service = document.querySelector("#service")?.value;
-    const problem = document.querySelector("#problem")?.value.trim();
-    const address = document.querySelector("#address")?.value.trim();
-    const photoInput = document.querySelector("#photo");
-    const photo = photoInput?.files?.[0];
+      const name = document.querySelector("#name")?.value.trim();
+      const phone = document.querySelector("#phone")?.value.trim();
+      const service = document.querySelector("#service")?.value;
+      const problem = document.querySelector("#problem")?.value.trim();
+      const address = document.querySelector("#address")?.value.trim();
+      const photoInput = document.querySelector("#photo");
+      const photo = photoInput?.files?.[0];
 
-    if (!name || !phone || !service || !problem || !address) {
-      result.textContent = "कृपया सभी जरूरी जानकारी भरें।";
-      return;
-    }
-
-    let photoUrl = null;
-
-    // Upload photo
-    if (photo) {
-      const safeName = photo.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const filePath = `${complaintNumber}/${Date.now()}-${safeName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("complaint-photos")
-        .upload(filePath, photo);
-
-      if (uploadError) {
-        result.textContent =
-          "Photo upload error: " + uploadError.message;
+      if (!name || !phone || !service || !problem || !address) {
+        result.textContent = "कृपया सभी जानकारी भरें।";
         return;
       }
 
-      const { data: publicData } = supabase.storage
-        .from("complaint-photos")
-        .getPublicUrl(filePath);
+      let photoUrl = "";
 
-      photoUrl = publicData.publicUrl;
-    }
+      // Photo upload
+      if (photo) {
+        const safeName = photo.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const filePath =
+          `${complaintNumber}/${Date.now()}-${safeName}`;
 
-    // Save complaint
-    const row = {
-      complaint_number: complaintNumber,
-      customer_name: name,
-      phone: phone,
-      service: service,
-      problem: problem,
-      photo_url: photoUrl,
-      address: address
-    };
+        const { error: uploadError } = await supabase.storage
+          .from("complaint-photos")
+          .upload(filePath, photo);
 
-    const { error: insertError } = await supabase
-      .from("complaints")
-      .insert([row]);
+        if (uploadError) {
+          result.textContent =
+            "Photo upload error: " + uploadError.message;
+          return;
+        }
 
-    if (insertError) {
+        const { data: publicData } = supabase.storage
+          .from("complaint-photos")
+          .getPublicUrl(filePath);
+
+        photoUrl = publicData.publicUrl;
+      } else {
+        result.textContent = "कृपया complaint की photo चुनें।";
+        return;
+      }
+
+      // Database row
+      const row = {
+        customer_name: name,
+        phone: phone,
+        service: service,
+        problem: problem,
+        photo_url: photoUrl,
+        address: address,
+        status: "Pending"
+      };
+
+      const { data, error } = await supabase
+        .from("complaints")
+        .insert([row])
+        .select()
+        .single();
+
+      if (error) {
+        result.textContent =
+          "Complaint error: " + error.message;
+        return;
+      }
+
+      result.innerHTML = `
+        <strong>Complaint Successfully Registered!</strong><br><br>
+        Complaint Number: <b>${complaintNumber}</b><br>
+        Status: <b>Pending</b><br><br>
+        कृपया Complaint Number सुरक्षित रखें।
+      `;
+
+      form.reset();
+
+    } catch (error) {
       result.textContent =
-        "Complaint error: " + insertError.message;
-      return;
+        "Complaint error: " + error.message;
+      console.error(error);
     }
-
-    result.innerHTML =
-      `Complaint Number: <b>${complaintNumber}</b><br>
-       आपकी complaint successfully दर्ज हो गई।<br>
-       इसे सुरक्षित रखें।`;
-
-    form.reset();
   });
 }

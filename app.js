@@ -35,36 +35,31 @@ if (form) {
         return;
       }
 
-      let photoUrl = "";
-
-      // Photo upload
-      if (photo) {
-        const safeName = photo.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const filePath =
-          `${complaintNumber}/${Date.now()}-${safeName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("complaint-photos")
-          .upload(filePath, photo);
-
-        if (uploadError) {
-          result.textContent =
-            "Photo upload error: " + uploadError.message;
-          return;
-        }
-
-        const { data: publicData } = supabase.storage
-          .from("complaint-photos")
-          .getPublicUrl(filePath);
-
-        photoUrl = publicData.publicUrl;
-      } else {
+      if (!photo) {
         result.textContent = "कृपया complaint की photo चुनें।";
         return;
       }
 
-      // Database row
+      const safeName = photo.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const filePath = `${complaintNumber}/${Date.now()}-${safeName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("complaint-photos")
+        .upload(filePath, photo);
+
+      if (uploadError) {
+        result.textContent = "Photo upload error: " + uploadError.message;
+        return;
+      }
+
+      const { data: publicData } = supabase.storage
+        .from("complaint-photos")
+        .getPublicUrl(filePath);
+
+      const photoUrl = publicData.publicUrl;
+
       const row = {
+        complaint_number: complaintNumber,
         customer_name: name,
         phone: phone,
         service: service,
@@ -74,15 +69,12 @@ if (form) {
         status: "Pending"
       };
 
-      const { data, error } = await supabase
+      const { error: insertError } = await supabase
         .from("complaints")
-        .insert([row])
-        .select()
-        .single();
+        .insert([row]);
 
-      if (error) {
-        result.textContent =
-          "Complaint error: " + error.message;
+      if (insertError) {
+        result.textContent = "Complaint error: " + insertError.message;
         return;
       }
 
@@ -96,9 +88,8 @@ if (form) {
       form.reset();
 
     } catch (error) {
-      result.textContent =
-        "Complaint error: " + error.message;
       console.error(error);
+      result.textContent = "Complaint error: " + error.message;
     }
   });
 }

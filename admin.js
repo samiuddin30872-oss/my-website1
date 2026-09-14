@@ -1,10 +1,197 @@
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-import{SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY}from"./supabase.js";
-const supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-const login=document.querySelector("#login"),out=document.querySelector("#loginResult"),dash=document.querySelector("#dashboard"),list=document.querySelector("#list");
-login.addEventListener("submit",async e=>{e.preventDefault();const{error}=await supabase.auth.signInWithPassword({email:email.value,password:password.value});
-if(error){out.textContent=error.message;return}login.style.display="none";dash.style.display="block";load()});
-async function load(){const{data,error}=await supabase.from("complaints").select("*").order("created_at",{ascending:false});
-if(error){list.textContent=error.message;return}list.innerHTML=data.map(x=>`<article style="margin:15px 0"><b>${x.complaint_number||x.id}</b><br>${x.customer_name}<br>${x.phone}<br>${x.service}<br>${x.problem}<p>Status: <select data-id="${x.id}"><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select></p>${x.photo_url?`<a href="${x.photo_url}" target="_blank">📷 Photo</a>`:""}</article>`).join("");
-list.querySelectorAll("select").forEach(s=>{const row=data.find(x=>x.id===s.dataset.id);s.value=row.status;s.onchange=async()=>{const{error}=await supabase.from("complaints").update({status:s.value}).eq("id",s.dataset.id);if(error)alert(error.message)}})}
-document.querySelector("#refresh").onclick=load;
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import {
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+} from "./supabase.js";
+
+const supabase = createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
+const loginForm = document.querySelector("#login");
+const emailInput = document.querySelector("#email");
+const passwordInput = document.querySelector("#password");
+const loginResult = document.querySelector("#loginResult");
+const dashboard = document.querySelector("#dashboard");
+const list = document.querySelector("#list");
+const refreshBtn = document.querySelector("#refresh");
+
+// ---------- Login ----------
+loginForm?.addEventListener("submit", async (e) => {
+e.preventDefault();
+
+loginResult.textContent = "Login हो रहा है...";
+
+const email = emailInput.value.trim();
+const password = passwordInput.value;
+
+const { error } = await supabase.auth.signInWithPassword({
+email,
+password
+});
+
+if (error) {
+loginResult.textContent = "❌ " + error.message;
+return;
+}
+
+loginResult.textContent = "";
+
+loginForm.style.display = "none";
+dashboard.style.display = "block";
+
+addLogoutButton();
+await loadComplaints();
+});
+
+// ---------- Check existing login ----------
+const { data: sessionData } = await supabase.auth.getSession();
+
+if (sessionData?.session) {
+loginForm.style.display = "none";
+dashboard.style.display = "block";
+
+addLogoutButton();
+loadComplaints();
+}
+
+// ---------- Load complaints ----------
+async function loadComplaints() {
+list.textContent = "Complaints load हो रही हैं...";
+
+const { data, error } = await supabase
+.from("complaints")
+.select("*")
+.order("created_at", { ascending: false });
+
+if (error) {
+list.textContent = "❌ " + error.message;
+return;
+}
+
+if (!data || data.length === 0) {
+list.textContent = "अभी कोई complaint नहीं है।";
+return;
+}
+
+list.innerHTML = "";
+
+data.forEach((row) => {
+const article = document.createElement("article");
+
+```
+article.style.margin = "15px 0";
+article.style.padding = "15px";
+article.style.border = "1px solid #ddd";
+article.style.borderRadius = "10px";
+
+const title = document.createElement("b");
+title.textContent = row.complaint_number || row.id;
+
+const name = document.createElement("div");
+name.textContent = "नाम: " + (row.customer_name || "-");
+
+const phone = document.createElement("div");
+phone.textContent = "मोबाइल: " + (row.phone || "-");
+
+const service = document.createElement("div");
+service.textContent = "Service: " + (row.service || "-");
+
+const problem = document.createElement("div");
+problem.textContent = "समस्या: " + (row.problem || "-");
+
+const statusLabel = document.createElement("p");
+statusLabel.textContent = "Status: ";
+
+const status = document.createElement("select");
+
+["Pending", "Assigned", "In Progress", "Completed"].forEach(
+  (statusName) => {
+    const option = document.createElement("option");
+    option.value = statusName;
+    option.textContent = statusName;
+    status.appendChild(option);
+  }
+);
+
+status.value = row.status || "Pending";
+
+status.addEventListener("change", async () => {
+  status.disabled = true;
+
+  const { error: updateError } = await supabase
+    .from("complaints")
+    .update({ status: status.value })
+    .eq("id", row.id);
+
+  status.disabled = false;
+
+  if (updateError) {
+    alert("❌ Status update error: " + updateError.message);
+    status.value = row.status || "Pending";
+    return;
+  }
+
+  row.status = status.value;
+  alert("✅ Status successfully update हो गया।");
+});
+
+statusLabel.appendChild(status);
+
+article.appendChild(title);
+article.appendChild(document.createElement("br"));
+article.appendChild(name);
+article.appendChild(phone);
+article.appendChild(service);
+article.appendChild(problem);
+article.appendChild(statusLabel);
+
+if (row.photo_url) {
+  const photo = document.createElement("a");
+
+  photo.href = row.photo_url;
+  photo.target = "_blank";
+  photo.rel = "noopener noreferrer";
+  photo.textContent = "📷 Photo देखें";
+
+  article.appendChild(photo);
+}
+
+list.appendChild(article);
+```
+
+});
+}
+
+// ---------- Refresh ----------
+refreshBtn?.addEventListener("click", loadComplaints);
+
+// ---------- Logout ----------
+function addLogoutButton() {
+if (document.querySelector("#logout")) return;
+
+const logout = document.createElement("button");
+
+logout.id = "logout";
+logout.className = "btn";
+logout.textContent = "Logout";
+
+logout.style.marginBottom = "15px";
+
+logout.addEventListener("click", async () => {
+await supabase.auth.signOut();
+
+```
+dashboard.style.display = "none";
+loginForm.style.display = "block";
+loginForm.reset();
+loginResult.textContent = "Logout हो गया।";
+logout.remove();
+```
+
+});
+
+dashboard.prepend(logout);
+}

@@ -27,6 +27,7 @@ let technicians = [];
 // =========================
 
 loginForm?.addEventListener("submit", async (e) => {
+  alert("LOGIN BUTTON WORKING");
   e.preventDefault();
 
   loginResult.textContent = "Login हो रहा है...";

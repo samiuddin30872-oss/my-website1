@@ -1,5 +1,6 @@
-alert("ADMIN JS OK");
+```js
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
 import {
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY
@@ -10,12 +11,18 @@ const supabase = createClient(
   SUPABASE_PUBLISHABLE_KEY
 );
 
+// =========================
+// DOM
+// =========================
+
 const loginForm = document.querySelector("#login");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const loginResult = document.querySelector("#loginResult");
+
 const dashboard = document.querySelector("#dashboard");
 const list = document.querySelector("#list");
+
 const refreshBtn = document.querySelector("#refresh");
 const searchInput = document.querySelector("#search");
 
@@ -27,7 +34,6 @@ let technicians = [];
 // =========================
 
 loginForm?.addEventListener("submit", async (e) => {
-  alert("LOGIN BUTTON WORKING");
   e.preventDefault();
 
   loginResult.textContent = "Login हो रहा है...";
@@ -35,17 +41,27 @@ loginForm?.addEventListener("submit", async (e) => {
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    loginResult.textContent = "❌ " + error.message;
+  if (!email || !password) {
+    loginResult.textContent =
+      "❌ Email और Password भरें।";
     return;
   }
 
-  loginResult.textContent = "";
+  const { error } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if (error) {
+    loginResult.textContent =
+      "❌ " + error.message;
+    return;
+  }
+
+  loginResult.textContent =
+    "✅ Login सफल";
+
   loginForm.style.display = "none";
   dashboard.style.display = "block";
 
@@ -58,24 +74,37 @@ loginForm?.addEventListener("submit", async (e) => {
 // EXISTING SESSION
 // =========================
 
-const { data: sessionData } =
-  await supabase.auth.getSession();
+async function checkExistingSession() {
+  const { data, error } =
+    await supabase.auth.getSession();
 
-if (sessionData?.session) {
-  loginForm.style.display = "none";
-  dashboard.style.display = "block";
+  if (error) {
+    console.log(
+      "Session error:",
+      error.message
+    );
+    return;
+  }
 
-  addLogoutButton();
+  if (data?.session) {
+    loginForm.style.display = "none";
+    dashboard.style.display = "block";
 
-  await loadAll();
+    addLogoutButton();
+
+    await loadAll();
+  }
 }
 
 // =========================
-// LOAD ALL DATA
+// LOAD ALL
 // =========================
 
 async function loadAll() {
-  list.textContent = "Complaints load हो रही हैं...";
+  if (!list) return;
+
+  list.textContent =
+    "Complaints load हो रही हैं...";
 
   await Promise.all([
     loadComplaints(),
@@ -90,13 +119,18 @@ async function loadAll() {
 // =========================
 
 async function loadComplaints() {
-  const { data, error } = await supabase
-    .from("complaints")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const { data, error } =
+    await supabase
+      .from("complaints")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
 
   if (error) {
-    list.textContent = "❌ " + error.message;
+    list.textContent =
+      "❌ Complaint load error: " +
+      error.message;
     return;
   }
 
@@ -110,13 +144,22 @@ async function loadComplaints() {
 // =========================
 
 async function loadTechnicians() {
-  const { data, error } = await supabase
-    .from("technicians")
-    .select("id,name,phone,areal,status")
-    .order("name", { ascending: true });
+  const { data, error } =
+    await supabase
+      .from("technicians")
+      .select(
+        "id,name,phone,areal,status"
+      )
+      .order("name", {
+        ascending: true
+      });
 
   if (error) {
-    console.log("Technicians load error:", error.message);
+    console.log(
+      "Technicians load error:",
+      error.message
+    );
+
     technicians = [];
     return;
   }
@@ -131,27 +174,49 @@ async function loadTechnicians() {
 function updateCounters() {
   const total = complaints.length;
 
-  const pending = complaints.filter(
-    x => x.status === "Pending"
-  ).length;
+  const pending =
+    complaints.filter(
+      (x) => x.status === "Pending"
+    ).length;
 
-  const progress = complaints.filter(
-    x => x.status === "In Progress"
-  ).length;
+  const progress =
+    complaints.filter(
+      (x) => x.status === "In Progress"
+    ).length;
 
-  const completed = complaints.filter(
-    x => x.status === "Completed"
-  ).length;
+  const completed =
+    complaints.filter(
+      (x) => x.status === "Completed"
+    ).length;
 
-  const totalCount = document.querySelector("#totalCount");
-  const pendingCount = document.querySelector("#pendingCount");
-  const progressCount = document.querySelector("#progressCount");
-  const completedCount = document.querySelector("#completedCount");
+  const totalCount =
+    document.querySelector("#totalCount");
 
-  if (totalCount) totalCount.textContent = total;
-  if (pendingCount) pendingCount.textContent = pending;
-  if (progressCount) progressCount.textContent = progress;
-  if (completedCount) completedCount.textContent = completed;
+  const pendingCount =
+    document.querySelector("#pendingCount");
+
+  const progressCount =
+    document.querySelector("#progressCount");
+
+  const completedCount =
+    document.querySelector("#completedCount");
+
+  if (totalCount) {
+    totalCount.textContent = total;
+  }
+
+  if (pendingCount) {
+    pendingCount.textContent = pending;
+  }
+
+  if (progressCount) {
+    progressCount.textContent = progress;
+  }
+
+  if (completedCount) {
+    completedCount.textContent =
+      completed;
+  }
 }
 
 // =========================
@@ -159,117 +224,199 @@ function updateCounters() {
 // =========================
 
 function renderComplaints(data) {
+  if (!list) return;
+
   list.innerHTML = "";
 
   if (!data.length) {
-    list.textContent = "❌ कोई complaint नहीं मिली।";
+    list.textContent =
+      "❌ कोई complaint नहीं मिली।";
     return;
   }
 
   data.forEach((row) => {
+    const article =
+      document.createElement("article");
 
-    const article = document.createElement("article");
-    article.className = "complaint-card";
+    article.className =
+      "complaint-card";
 
-    const title = document.createElement("h3");
+    // -------------------------
+    // TITLE
+    // -------------------------
+
+    const title =
+      document.createElement("h3");
+
     title.textContent =
-      "📋 " + (row.complaint_number || row.id);
+      "📋 " +
+      (row.complaint_number || row.id);
 
-    const name = document.createElement("div");
+    // -------------------------
+    // CUSTOMER
+    // -------------------------
+
+    const name =
+      document.createElement("div");
+
     name.textContent =
-      "👤 नाम: " + (row.customer_name || "-");
+      "👤 नाम: " +
+      (row.customer_name || "-");
 
-    const phone = document.createElement("div");
+    // -------------------------
+    // PHONE
+    // -------------------------
+
+    const phone =
+      document.createElement("div");
+
     phone.textContent =
-      "📱 मोबाइल: " + (row.phone || "-");
+      "📱 मोबाइल: " +
+      (row.phone || "-");
 
-    const service = document.createElement("div");
+    // -------------------------
+    // SERVICE
+    // -------------------------
+
+    const service =
+      document.createElement("div");
+
     service.textContent =
-      "🔧 Service: " + (row.service || "-");
+      "🔧 Service: " +
+      (row.service || "-");
 
-    const problem = document.createElement("div");
+    // -------------------------
+    // PROBLEM
+    // -------------------------
+
+    const problem =
+      document.createElement("div");
+
     problem.textContent =
-      "⚠️ समस्या: " + (row.problem || "-");
+      "⚠️ समस्या: " +
+      (row.problem || "-");
 
-    const address = document.createElement("div");
+    // -------------------------
+    // ADDRESS
+    // -------------------------
+
+    const address =
+      document.createElement("div");
+
     address.textContent =
-      "📍 Address: " + (row.address || "-");
+      "📍 Address: " +
+      (row.address || "-");
 
-    const date = document.createElement("div");
+    // -------------------------
+    // DATE
+    // -------------------------
+
+    const date =
+      document.createElement("div");
 
     if (row.created_at) {
-      const d = new Date(row.created_at);
+      const d =
+        new Date(row.created_at);
 
       date.textContent =
-        "📅 Date: " + d.toLocaleString("en-IN");
+        "📅 Date: " +
+        d.toLocaleString("en-IN");
     } else {
-      date.textContent = "📅 Date: -";
+      date.textContent =
+        "📅 Date: -";
     }
 
+    // =========================
     // STATUS
-    const statusLabel = document.createElement("p");
-    statusLabel.textContent = "Status: ";
+    // =========================
 
-    const status = document.createElement("select");
-    status.className = "status-select";
+    const statusLabel =
+      document.createElement("p");
 
-    [
+    statusLabel.textContent =
+      "Status: ";
+
+    const status =
+      document.createElement("select");
+
+    status.className =
+      "status-select";
+
+    const statusList = [
       "Pending",
       "Assigned",
       "In Progress",
       "Completed"
-    ].forEach((statusName) => {
+    ];
 
-      const option =
-        document.createElement("option");
+    statusList.forEach(
+      (statusName) => {
+        const option =
+          document.createElement("option");
 
-      option.value = statusName;
-      option.textContent = statusName;
+        option.value =
+          statusName;
 
-      status.appendChild(option);
-    });
+        option.textContent =
+          statusName;
 
-    status.value = row.status || "Pending";
+        status.appendChild(option);
+      }
+    );
 
-    status.addEventListener("change", async () => {
+    status.value =
+      row.status || "Pending";
 
-      const newStatus = status.value;
-
-      status.disabled = true;
-
-      const { error } = await supabase
-        .from("complaints")
-        .update({
-          status: newStatus
-        })
-        .eq("id", row.id);
-
-      status.disabled = false;
-
-      if (error) {
-        alert(
-          "❌ Status update error: " +
-          error.message
-        );
-
-        status.value =
+    status.addEventListener(
+      "change",
+      async () => {
+        const oldStatus =
           row.status || "Pending";
 
-        return;
+        const newStatus =
+          status.value;
+
+        status.disabled = true;
+
+        const { error } =
+          await supabase
+            .from("complaints")
+            .update({
+              status: newStatus
+            })
+            .eq("id", row.id);
+
+        status.disabled = false;
+
+        if (error) {
+          alert(
+            "❌ Status update error:\n" +
+            error.message
+          );
+
+          status.value =
+            oldStatus;
+
+          return;
+        }
+
+        row.status =
+          newStatus;
+
+        updateCounters();
+
+        alert(
+          "✅ Status successfully update हो गया।"
+        );
       }
-
-      row.status = newStatus;
-
-      updateCounters();
-
-      alert(
-        "✅ Status successfully update हो गया।"
-      );
-    });
+    );
 
     statusLabel.appendChild(status);
 
+    // =========================
     // TECHNICIAN
+    // =========================
+
     const technicianLabel =
       document.createElement("p");
 
@@ -286,25 +433,32 @@ function renderComplaints(data) {
       document.createElement("option");
 
     noTech.value = "";
+
     noTech.textContent =
       "Technician चुनें";
 
-    technicianSelect.appendChild(noTech);
+    technicianSelect.appendChild(
+      noTech
+    );
 
     technicians.forEach((tech) => {
-
       const option =
         document.createElement("option");
 
-      option.value = tech.id;
+      option.value =
+        tech.id;
 
       option.textContent =
         tech.name +
         (tech.status
-          ? " (" + tech.status + ")"
+          ? " (" +
+            tech.status +
+            ")"
           : "");
 
-      technicianSelect.appendChild(option);
+      technicianSelect.appendChild(
+        option
+      );
     });
 
     if (row.technician_id) {
@@ -315,29 +469,36 @@ function renderComplaints(data) {
     technicianSelect.addEventListener(
       "change",
       async () => {
-
         const technicianId =
-          technicianSelect.value || null;
+          technicianSelect.value ||
+          null;
 
-        technicianSelect.disabled = true;
+        const oldTechnician =
+          row.technician_id || "";
 
-        const { error } = await supabase
-          .from("complaints")
-          .update({
-            technician_id: technicianId
-          })
-          .eq("id", row.id);
+        technicianSelect.disabled =
+          true;
 
-        technicianSelect.disabled = false;
+        const { error } =
+          await supabase
+            .from("complaints")
+            .update({
+              technician_id:
+                technicianId
+            })
+            .eq("id", row.id);
+
+        technicianSelect.disabled =
+          false;
 
         if (error) {
           alert(
-            "❌ Technician assign error: " +
+            "❌ Technician assign error:\n" +
             error.message
           );
 
           technicianSelect.value =
-            row.technician_id || "";
+            oldTechnician;
 
           return;
         }
@@ -355,15 +516,21 @@ function renderComplaints(data) {
       technicianSelect
     );
 
-    // ACTION BUTTONS
+    // =========================
+    // ACTIONS
+    // =========================
+
     const actions =
       document.createElement("div");
 
-    actions.className = "actions";
+    actions.className =
+      "actions";
 
+    // -------------------------
     // CALL
-    if (row.phone) {
+    // -------------------------
 
+    if (row.phone) {
       const call =
         document.createElement("a");
 
@@ -379,14 +546,17 @@ function renderComplaints(data) {
       actions.appendChild(call);
     }
 
+    // -------------------------
     // WHATSAPP
-    if (row.phone) {
+    // -------------------------
 
+    if (row.phone) {
       const whatsapp =
         document.createElement("a");
 
       const cleanPhone =
-        row.phone.replace(/\D/g, "");
+        String(row.phone)
+          .replace(/\D/g, "");
 
       const whatsappPhone =
         cleanPhone.length === 10
@@ -404,7 +574,9 @@ function renderComplaints(data) {
         "?text=" +
         encodeURIComponent(message);
 
-      whatsapp.target = "_blank";
+      whatsapp.target =
+        "_blank";
+
       whatsapp.rel =
         "noopener noreferrer";
 
@@ -414,17 +586,25 @@ function renderComplaints(data) {
       whatsapp.textContent =
         "💬 WhatsApp";
 
-      actions.appendChild(whatsapp);
+      actions.appendChild(
+        whatsapp
+      );
     }
 
+    // -------------------------
     // PHOTO
-    if (row.photo_url) {
+    // -------------------------
 
+    if (row.photo_url) {
       const photo =
         document.createElement("a");
 
-      photo.href = row.photo_url;
-      photo.target = "_blank";
+      photo.href =
+        row.photo_url;
+
+      photo.target =
+        "_blank";
+
       photo.rel =
         "noopener noreferrer";
 
@@ -436,6 +616,10 @@ function renderComplaints(data) {
 
       actions.appendChild(photo);
     }
+
+    // =========================
+    // APPEND
+    // =========================
 
     article.appendChild(title);
     article.appendChild(name);
@@ -459,20 +643,20 @@ function renderComplaints(data) {
 searchInput?.addEventListener(
   "input",
   () => {
-
     const q =
       searchInput.value
         .trim()
         .toLowerCase();
 
     if (!q) {
-      renderComplaints(complaints);
+      renderComplaints(
+        complaints
+      );
       return;
     }
 
     const filtered =
       complaints.filter((row) => {
-
         return [
           row.complaint_number,
           row.customer_name,
@@ -482,7 +666,7 @@ searchInput?.addEventListener(
           row.address
         ]
           .filter(Boolean)
-          .some(value =>
+          .some((value) =>
             String(value)
               .toLowerCase()
               .includes(q)
@@ -500,12 +684,13 @@ searchInput?.addEventListener(
 refreshBtn?.addEventListener(
   "click",
   async () => {
-
     refreshBtn.disabled = true;
 
-    await loadAll();
-
-    refreshBtn.disabled = false;
+    try {
+      await loadAll();
+    } finally {
+      refreshBtn.disabled = false;
+    }
   }
 );
 
@@ -514,8 +699,9 @@ refreshBtn?.addEventListener(
 // =========================
 
 function addLogoutButton() {
-
-  if (document.querySelector("#logout")) {
+  if (
+    document.querySelector("#logout")
+  ) {
     return;
   }
 
@@ -523,8 +709,12 @@ function addLogoutButton() {
     document.createElement("button");
 
   logout.id = "logout";
-  logout.className = "btn";
-  logout.textContent = "🚪 Logout";
+
+  logout.className =
+    "btn";
+
+  logout.textContent =
+    "🚪 Logout";
 
   logout.style.marginBottom =
     "15px";
@@ -532,8 +722,16 @@ function addLogoutButton() {
   logout.addEventListener(
     "click",
     async () => {
+      const { error } =
+        await supabase.auth.signOut();
 
-      await supabase.auth.signOut();
+      if (error) {
+        alert(
+          "❌ Logout error:\n" +
+          error.message
+        );
+        return;
+      }
 
       dashboard.style.display =
         "none";
@@ -552,4 +750,10 @@ function addLogoutButton() {
 
   dashboard.prepend(logout);
 }
+
+// =========================
+// START
+// =========================
+
+checkExistingSession();
 ```

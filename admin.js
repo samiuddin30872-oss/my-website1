@@ -5,7 +5,7 @@ import {
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY
 } from "./supabase.js";
-
+alert("Admin JS चल रहा है");
 const supabase = createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY

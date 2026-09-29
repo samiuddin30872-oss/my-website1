@@ -1,7 +1,12 @@
 <!doctype html>
 <html lang="hi">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Raja Refrigeration</title><link rel="stylesheet" href="style.css"></head>
+<title>Raja Refrigeration</title><link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b63d6">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
 <body>
 <header><div class="wrap nav"><strong>❄️ Raja Refrigeration</strong>
 <nav><a href="#services">Services</a><a href="#complaint">Complaint</a><a href="#status">Status</a><a href="#contact">Contact</a></nav></div></header>
@@ -22,4 +27,12 @@
 <section id="contact"><div class="wrap"><h2>📞 Contact</h2><p><strong>Raja Refrigeration</strong></p><p>WhatsApp: 9548404815</p><p>Call: +91 7017672535</p>
 <a class="btn" href="https://maps.app.goo.gl/toDwwcBSrZZsEdza8" target="_blank">📍 Google Maps</a></div></section>
 <footer>© 2026 Raja Refrigeration</footer>
-<script type="module" src="app.js"></script></body></html>
+<script type="module" src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(console.error);
+  });
+}
+</script>
+</body></html>

@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "dev.workers.samiuddin30872.my_website1.twa",
+        "sha256_cert_fingerprints": ["08:D5:CC:F5:06:08:6C:5F:E7:93:89:17:94:8A:BD:E3:27:0E:99:00:20:38:11:46:B4:F6:24:31:75:2F:51:62"]
+      }
+    }]

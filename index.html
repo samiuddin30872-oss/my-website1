@@ -1,32 +1,186 @@
 <!doctype html>
 <html lang="hi">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Raja Refrigeration</title><link rel="stylesheet" href="style.css">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>राजा रेफ्रिजरेशन — AC, फ्रिज, वाशिंग मशीन व Car/Truck AC सर्विस</title>
+<meta name="description" content="राजा रेफ्रिजरेशन — AC, रेफ्रिजरेटर, वाशिंग मशीन रिपेयर और कार/ट्रक/कैंटर AC गैस व सर्विसिंग। कॉल करें: 7017672535">
+<link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b63d6">
+<meta name="theme-color" content="#0a2647">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
-<header><div class="wrap nav"><strong>❄️ Raja Refrigeration</strong>
-<nav><a href="#services">Services</a><a href="#complaint">Complaint</a><a href="#status">Status</a><a href="#contact">Contact</a></nav></div></header>
-<section class="hero"><div class="wrap"><h1>AC & Home Appliance Repair</h1><p>AC, Refrigerator और Washing Machine repair/service के लिए online complaint दर्ज करें।</p>
-<a class="btn" href="#complaint">📝 Complaint करें</a><a class="btn wa" href="https://wa.me/919548404815" target="_blank">WhatsApp</a><a class="btn call" href="tel:+917017672535">Call Now</a></div></section>
-<section id="services"><div class="wrap"><h2>हमारी Services</h2><div class="grid">
-<article><div class="icon">❄️</div><h3>AC Repair</h3><p>Cooling, gas, installation और repair.</p></article>
-<article><div class="icon">🧺</div><h3>Washing Machine</h3><p>जांच और repair service.</p></article>
-<article><div class="icon">🧊</div><h3>Refrigerator Repair</h3><p>Cooling और refrigerator repair.</p></article>
-</div></div></section>
-<section id="complaint"><div class="wrap"><h2>📝 Complaint दर्ज करें</h2><form id="complaintForm">
-<label>नाम<input id="name" required></label><label>मोबाइल नंबर<input id="phone" type="tel" required></label>
-<label>Service<select id="service" required><option value="">चुनें</option><option>AC Repair</option><option>Washing Machine Repair</option><option>Refrigerator Repair</option><option>Other</option></select></label>
-<label>समस्या<textarea id="problem" required></textarea></label><label>Photo<input id="photo" type="file" accept="image/*"></label>
-<label>Address<textarea id="address"></textarea></label><button class="btn" type="submit">Complaint Submit करें</button><div id="result"></div>
-</form></div></section>
-<section id="status"><div class="wrap"><h2>🔎 Complaint Status</h2><form id="statusForm"><input id="statusNo" placeholder="RR-123456" required><button class="btn">Status देखें</button><div id="statusResult"></div></form></div></section>
-<section id="contact"><div class="wrap"><h2>📞 Contact</h2><p><strong>Raja Refrigeration</strong></p><p>WhatsApp: 9548404815</p><p>Call: +91 7017672535</p>
-<a class="btn" href="https://maps.app.goo.gl/toDwwcBSrZZsEdza8" target="_blank">📍 Google Maps</a></div></section>
-<footer>© 2026 Raja Refrigeration</footer>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top"><img src="icon-192.png" alt="राजा रेफ्रिजरेशन लोगो">राजा रेफ्रिजरेशन</a>
+    <nav class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#complaint">Complaint</a>
+      <a href="#status">Status देखें</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="nav-call" href="tel:+917017672535">📞 7017672535</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow-tag">❄️ Sales · Service · Repair</span>
+      <h1>AC, फ्रिज और वाशिंग मशीन की <span>पूरी देखभाल</span>, गाड़ी की ठंडी हवा भी हमारी ज़िम्मेदारी</h1>
+      <p class="lede">Car, Truck और Canter AC गैस व सर्विसिंग से लेकर घर के AC, रेफ्रिजरेटर और वाशिंग मशीन रिपेयर तक — एक कॉल पर भरोसेमंद सर्विस।</p>
+      <div class="cta-row">
+        <a class="btn" href="#complaint">📝 Complaint दर्ज करें</a>
+        <a class="btn wa" href="https://wa.me/919548404815" target="_blank" rel="noopener">WhatsApp करें</a>
+        <a class="btn call" href="tel:+917017672535">Call Now</a>
+      </div>
+    </div>
+    <div class="hero-figure">
+      <img src="banner.jpg" alt="राजा रेफ्रिजरेशन की दुकान — कार, ट्रक और कैंटर AC सर्विस">
+    </div>
+  </div>
+</section>
+
+<div class="trust-strip">
+  <div class="wrap">
+    <span class="trust-item"><span class="dot"></span>AC गैस भराई</span>
+    <span class="trust-item"><span class="dot"></span>सर्विसिंग एवं रिपेयरिंग</span>
+    <span class="trust-item"><span class="dot"></span>क्वालिटी पार्ट्स</span>
+    <span class="trust-item"><span class="dot"></span>किफायती दरें</span>
+  </div>
+</div>
+
+<section id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">हमारी सर्विसेज़</div>
+      <h2>घर से लेकर गाड़ी तक, हर ठंडक की गारंटी</h2>
+      <p>दो हिस्सों में बंटी हमारी सर्विस — घरेलू उपकरण और वाहनों की AC सर्विस</p>
+    </div>
+    <div class="service-tracks">
+      <div class="track">
+        <h3>🏠 घरेलू उपकरण</h3>
+        <p class="track-sub">Home Appliance Repair</p>
+        <div class="service-row">
+          <div class="ico">❄️</div>
+          <div><h4>AC Repair व गैस भराई</h4><p>Installation, cooling की समस्या और gas refill।</p></div>
+        </div>
+        <div class="service-row">
+          <div class="ico">🧊</div>
+          <div><h4>रेफ्रिजरेटर रिपेयर</h4><p>Cooling न होना, gas leak और अन्य समस्याएं ठीक करते हैं।</p></div>
+        </div>
+        <div class="service-row">
+          <div class="ico">🧺</div>
+          <div><h4>वाशिंग मशीन रिपेयर</h4><p>जांच से लेकर पूरी repair service घर बैठे।</p></div>
+        </div>
+      </div>
+      <div class="track">
+        <h3>🚘 व्हीकल AC सर्विस</h3>
+        <p class="track-sub">Car · Truck · Canter AC</p>
+        <div class="service-row">
+          <div class="ico">🚗</div>
+          <div><h4>कार AC सर्विस</h4><p>गैस भराई, कूलिंग चेक और पूरी सर्विसिंग।</p></div>
+        </div>
+        <div class="service-row">
+          <div class="ico">🚚</div>
+          <div><h4>ट्रक व कैंटर AC</h4><p>बड़े वाहनों की AC गैस एवं सर्विस विशेषज्ञता के साथ।</p></div>
+        </div>
+        <div class="service-row">
+          <div class="ico">🔧</div>
+          <div><h4>क्वालिटी पार्ट्स व रिपेयरिंग</h4><p>असली पार्ट्स से मरम्मत, किफायती दरों पर।</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="why-strip">
+      <div class="why-item"><div class="num">❄️</div><h4>AC गैस भराई</h4><p>घर और गाड़ी दोनों के लिए</p></div>
+      <div class="why-item"><div class="num">🔧</div><h4>सर्विसिंग एवं रिपेयरिंग</h4><p>अनुभवी टेक्नीशियन टीम</p></div>
+      <div class="why-item"><div class="num">⚙️</div><h4>क्वालिटी पार्ट्स</h4><p>भरोसेमंद व टिकाऊ</p></div>
+      <div class="why-item"><div class="num">👍</div><h4>किफायती दरें</h4><p>पारदर्शी और उचित कीमत</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="complaint" style="background:var(--ice)">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">ऑनलाइन कंप्लेंट</div>
+      <h2>📝 Complaint दर्ज करें</h2>
+      <p>फॉर्म भरें, आपको एक Complaint Number मिलेगा जिससे आप status track कर सकते हैं</p>
+    </div>
+    <div class="panel">
+      <form id="complaintForm">
+        <label>नाम<input id="name" required></label>
+        <label>मोबाइल नंबर<input id="phone" type="tel" required></label>
+        <label>Service
+          <select id="service" required>
+            <option value="">चुनें</option>
+            <option>AC Repair</option>
+            <option>Refrigerator Repair</option>
+            <option>Washing Machine Repair</option>
+            <option>Car AC Service</option>
+            <option>Truck/Canter AC Service</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label>समस्या<textarea id="problem" required></textarea></label>
+        <label>Photo (वैकल्पिक)<input id="photo" type="file" accept="image/*"></label>
+        <label>Address<textarea id="address"></textarea></label>
+        <button class="btn" type="submit">Complaint Submit करें</button>
+        <div id="result"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="status">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">स्टेटस ट्रैकिंग</div>
+      <h2>🔎 Complaint Status देखें</h2>
+      <p>अपना Complaint Number डालकर current status चेक करें</p>
+    </div>
+    <div class="panel">
+      <form id="statusForm">
+        <label>Complaint Number<input id="statusNo" placeholder="RR-123456" required></label>
+        <button class="btn" type="submit">Status देखें</button>
+      </form>
+      <div id="statusResult"></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">संपर्क करें</div>
+      <h2>📞 Contact व Location</h2>
+      <p>कॉल, WhatsApp या सीधे दुकान पर आएं</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <h3>राजा रेफ्रिजरेशन</h3>
+        <p>📍 नायरा पेट्रोल पंप के सामने, B.S.N.L. बिल्डिंग, बायपास रोड़</p>
+        <p>📞 Call: <a href="tel:+917017672535">7017672535</a></p>
+        <p>📞 WhatsApp: <a href="https://wa.me/919548404815" target="_blank" rel="noopener">9548404815</a></p>
+      </div>
+      <div class="contact-card">
+        <h3>जल्दी संपर्क करें</h3>
+        <div class="cta-row">
+          <a class="btn wa" href="https://wa.me/919548404815" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="btn call" href="tel:+917017672535">Call Now</a>
+        </div>
+        <p style="margin-top:16px"><a class="btn outline" style="background:transparent;border-color:rgba(255,255,255,.4);color:#fff" href="https://maps.app.goo.gl/toDwwcBSrZZsEdza8" target="_blank" rel="noopener">📍 Google Maps पर देखें</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 राजा रेफ्रिजरेशन — Cool Service, Better Life</footer>
+
 <script type="module" src="app.js"></script>
 <script>
 if ("serviceWorker" in navigator) {
@@ -35,4 +189,5 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-</body></html>
+</body>
+</html>

@@ -2,7 +2,7 @@
   "name": "Raja Refrigeration",
   "short_name": "Raja Refrig.",
   "description": "AC, Refrigerator aur Washing Machine repair/service ke liye online complaint darj karein.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b63d6",

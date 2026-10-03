@@ -2,5 +2,23 @@
 <title>Raja Refrigeration Admin</title><link rel="stylesheet" href="style.css"></head><body><main><section><div class="wrap">
 <h2>🔐 Raja Refrigeration Admin</h2><form id="login"><label>Username<input id="email" type="text" required></label>
 <label>Password<input id="password" type="password" required></label><button class="btn">Login</button><div id="loginResult"></div></form>
-<div id="dashboard" style="display:none"><h2>Complaints</h2><button class="btn" id="refresh">Refresh</button> <button class="btn" id="enableNotif" style="background:#1fa855">🔔 Notifications Enable Karein</button><div id="notifStatus" style="margin:8px 0"></div><div id="list"></div></div>
+<div id="dashboard" style="display:none">
+<h2>Complaints</h2><button class="btn" id="refresh">Refresh</button> <button class="btn" id="enableNotif" style="background:#1fa855">🔔 Notifications Enable Karein</button><div id="notifStatus" style="margin:8px 0"></div><div id="list"></div>
+
+<h2 style="margin-top:40px">📋 Rate List / Catalogue</h2>
+<form id="catForm" style="margin-bottom:20px">
+  <label>Category
+    <select id="catCategory">
+      <option value="Home">Home Appliance</option>
+      <option value="Vehicle">Vehicle AC</option>
+    </select>
+  </label>
+  <label>Item/Service Naam<input id="catName" required placeholder="Jaise: AC Gas Refill"></label>
+  <label>Price<input id="catPrice" required placeholder="Jaise: ₹500 se shuru"></label>
+  <label>Photo (optional)<input id="catPhoto" type="file" accept="image/*"></label>
+  <button class="btn" type="submit">Add Karein</button>
+  <div id="catResult"></div>
+</form>
+<div id="catList"></div>
+</div>
 </div></section></main><script type="module" src="admin.js"></script></body></html>

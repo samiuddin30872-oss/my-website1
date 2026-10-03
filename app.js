@@ -18,3 +18,20 @@ document.querySelector("#statusForm").addEventListener("submit",async e=>{e.prev
 const no=document.querySelector("#statusNo").value.trim().toUpperCase();
 const{data,error}=await supabase.from("complaints").select("complaint_number,status,service,created_at").eq("complaint_number",no).maybeSingle();
 document.querySelector("#statusResult").innerHTML=error?`❌ ${error.message}`:data?`✅ ${data.complaint_number}<br>Status: <b>${data.status}</b><br>Service: ${data.service}`:"❌ Complaint नहीं मिली।"});
+
+// ---- Catalogue / Rate list display ----
+(async function loadCatalogueDisplay(){
+  const el=document.querySelector("#catalogueDisplay");
+  if(!el)return;
+  const{data,error}=await supabase.from("catalogue").select("*").order("display_order",{ascending:true}).order("created_at",{ascending:true});
+  if(error){el.innerHTML=`<p style="text-align:center;color:var(--muted)">Abhi list load nahi ho payi.</p>`;return}
+  if(!data||data.length===0){el.innerHTML=`<p style="text-align:center;color:var(--muted)">Jald hi rate list update hogi.</p>`;return}
+  el.innerHTML=data.map(x=>`<div class="cat-card">
+    ${x.image_url?`<img src="${x.image_url}" alt="${x.name}">`:""}
+    <div class="cat-body">
+      <span class="cat-tag">${x.category==="Vehicle"?"🚘 Vehicle AC":"🏠 Home Appliance"}</span>
+      <h4>${x.name}</h4>
+      <div class="cat-price">${x.price}</div>
+    </div>
+  </div>`).join("");
+})();

@@ -1,5 +1,6 @@
 import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import{SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY}from"./supabase.js";
+import{enableComplaintNotifications}from"./push-notifications.js";
 const supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const ADMIN_USERNAME="raja";
 const ADMIN_PASSWORD="246810";
@@ -8,6 +9,7 @@ const login=document.querySelector("#login"),out=document.querySelector("#loginR
 // Agar pehle se login hai (session saved hai), to seedha dashboard dikhayen
 if(sessionStorage.getItem("rajaAdminLoggedIn")==="true"){
   login.style.display="none";dash.style.display="block";load();
+  enableComplaintNotifications();
 }
 
 login.addEventListener("submit",e=>{
@@ -16,6 +18,7 @@ login.addEventListener("submit",e=>{
     sessionStorage.setItem("rajaAdminLoggedIn","true");
     out.textContent="";
     login.style.display="none";dash.style.display="block";load();
+    enableComplaintNotifications();
   } else {
     out.textContent="Galat username ya password. Dobara try karein.";
   }

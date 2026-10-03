@@ -16,10 +16,10 @@ const VAPID_KEY = "BDgla4uQMAMJWFb4p5DcEVJfBN5bpFPZt1GwP_M8_7e7yb9HSe3hJMo0LD-9T
 
 export async function enableComplaintNotifications() {
   try {
-    if (!("Notification" in window)) return;
+    if (!("Notification" in window)) return false;
 
     const permission = await Notification.requestPermission();
-    if (permission !== "granted") return;
+    if (permission !== "granted") return false;
 
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
@@ -33,9 +33,13 @@ export async function enableComplaintNotifications() {
 
     if (token) {
       const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-      await supabase.from("device_tokens").upsert({ token }, { onConflict: "token" });
+      const { error } = await supabase.from("device_tokens").upsert({ token }, { onConflict: "token" });
+      if (error) { console.error(error); return false; }
+      return true;
     }
+    return false;
   } catch (err) {
     console.error("Notification setup failed:", err);
+    return false;
   }
 }

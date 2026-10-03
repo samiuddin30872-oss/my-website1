@@ -33,6 +33,6 @@ if("Notification"in window && Notification.permission==="granted"){
 }
 notifBtn.onclick=async()=>{
   notifStatus.textContent="Setup ho raha hai...";
-  const ok=await enableComplaintNotifications();
-  notifStatus.textContent=ok?"✅ Notifications ON ho gaye!":"❌ Nahi ho paya. Browser settings mein permission check karein.";
+  const result=await enableComplaintNotifications();
+  notifStatus.textContent=(result===true)?"✅ Notifications ON ho gaye!":("❌ "+result);
 };

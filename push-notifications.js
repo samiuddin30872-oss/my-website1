@@ -16,15 +16,16 @@ const VAPID_KEY = "BDgla4uQMAMJWFb4p5DcEVJfBN5bpFPZt1GwP_M8_7e7yb9HSe3hJMo0LD-9T
 
 export async function enableComplaintNotifications() {
   try {
-    if (!("Notification" in window)) return false;
+    if (!("Notification" in window)) return "Browser Notification support nahi karta";
 
     const permission = await Notification.requestPermission();
-    if (permission !== "granted") return false;
+    if (permission !== "granted") return "Permission denied: " + permission;
 
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
 
     const swReg = await navigator.serviceWorker.register("./firebase-messaging-sw.js");
+    await navigator.serviceWorker.ready;
 
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
@@ -34,12 +35,11 @@ export async function enableComplaintNotifications() {
     if (token) {
       const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
       const { error } = await supabase.from("device_tokens").upsert({ token }, { onConflict: "token" });
-      if (error) { console.error(error); return false; }
+      if (error) return "DB error: " + error.message;
       return true;
     }
-    return false;
+    return "Token nahi mila (empty)";
   } catch (err) {
-    console.error("Notification setup failed:", err);
-    return false;
+    return "Error: " + (err && err.message ? err.message : String(err));
   }
 }

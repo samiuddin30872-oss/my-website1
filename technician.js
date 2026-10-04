@@ -23,7 +23,28 @@ let watchId=null;
   document.querySelector("#techNameShow").textContent=technician.name;
   loadingMsg.style.display="none";
   techPanel.style.display="block";
+  loadMyComplaints();
 })();
+
+const myComplaintsEl=document.querySelector("#myComplaints");
+async function loadMyComplaints(){
+  if(!technician)return;
+  myComplaintsEl.innerHTML="Load ho raha hai...";
+  const{data,error}=await supabase.from("complaints").select("*").eq("technician_id",technician.id).order("created_at",{ascending:false});
+  if(error){myComplaintsEl.textContent=error.message;return}
+  if(!data||data.length===0){myComplaintsEl.innerHTML="<p>Abhi koi complaint assign nahi hui.</p>";return}
+  myComplaintsEl.innerHTML=data.map(x=>`<article style="margin:14px 0;border-top:1px solid #ddd;padding-top:10px">
+    <b>${x.complaint_number}</b><br>${x.customer_name} — ${x.phone}<br>${x.service}<br>${x.problem}
+    ${x.address?`<br>📍 ${x.address}`:""}
+    <p>Status: <select data-id="${x.id}"><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select></p>
+  </article>`).join("");
+  myComplaintsEl.querySelectorAll("select").forEach(s=>{
+    const row=data.find(x=>x.id===s.dataset.id);
+    s.value=row.status;
+    s.onchange=async()=>{await supabase.from("complaints").update({status:s.value}).eq("id",s.dataset.id)};
+  });
+}
+document.querySelector("#refreshComplaints").onclick=loadMyComplaints;
 
 function showError(){
   loadingMsg.style.display="none";

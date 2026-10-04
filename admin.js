@@ -22,9 +22,15 @@ login.addEventListener("submit",e=>{
   }
 });
 
-async function load(){const{data,error}=await supabase.from("complaints").select("*").order("created_at",{ascending:false});
-if(error){list.textContent=error.message;return}list.innerHTML=data.map(x=>`<article style="margin:15px 0"><b>${x.complaint_number||x.id}</b><br>${x.customer_name}<br>${x.phone}<br>${x.service}<br>${x.problem}<p>Status: <select data-id="${x.id}"><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select></p>${x.photo_url?`<a href="${x.photo_url}" target="_blank">📷 Photo</a>`:""}</article>`).join("");
-list.querySelectorAll("select").forEach(s=>{const row=data.find(x=>x.id===s.dataset.id);s.value=row.status;s.onchange=async()=>{const{error}=await supabase.from("complaints").update({status:s.value}).eq("id",s.dataset.id);if(error)alert(error.message)}})}
+async function load(){
+const{data,error}=await supabase.from("complaints").select("*").order("created_at",{ascending:false});
+const{data:techs}=await supabase.from("technicians").select("id,name");
+if(error){list.textContent=error.message;return}
+const techOptions=(techs||[]).map(t=>`<option value="${t.id}">${t.name}</option>`).join("");
+list.innerHTML=data.map(x=>`<article style="margin:15px 0"><b>${x.complaint_number||x.id}</b><br>${x.customer_name}<br>${x.phone}<br>${x.service}<br>${x.problem}<p>Status: <select data-id="${x.id}"><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select></p><p>Technician: <select data-tech="${x.id}"><option value="">-- Koi nahi --</option>${techOptions}</select></p>${x.photo_url?`<a href="${x.photo_url}" target="_blank">📷 Photo</a>`:""}</article>`).join("");
+list.querySelectorAll("select[data-id]").forEach(s=>{const row=data.find(x=>x.id===s.dataset.id);s.value=row.status;s.onchange=async()=>{const{error}=await supabase.from("complaints").update({status:s.value}).eq("id",s.dataset.id);if(error)alert(error.message)}});
+list.querySelectorAll("select[data-tech]").forEach(s=>{const row=data.find(x=>x.id===s.dataset.tech);s.value=row.technician_id||"";s.onchange=async()=>{const{error}=await supabase.from("complaints").update({technician_id:s.value||null,status:s.value?"Assigned":row.status}).eq("id",s.dataset.tech);if(error)alert(error.message);else load()}});
+}
 document.querySelector("#refresh").onclick=load;
 
 const notifBtn=document.querySelector("#enableNotif"),notifStatus=document.querySelector("#notifStatus");

@@ -27,9 +27,49 @@ const{data,error}=await supabase.from("complaints").select("*").order("created_a
 const{data:techs}=await supabase.from("technicians").select("id,name");
 if(error){list.textContent=error.message;return}
 const techOptions=(techs||[]).map(t=>`<option value="${t.id}">${t.name}</option>`).join("");
-list.innerHTML=data.map(x=>`<article style="margin:15px 0"><b>${x.complaint_number||x.id}</b><br>${x.customer_name}<br>${x.phone}<br>${x.service}<br>${x.problem}<p>Status: <select data-id="${x.id}"><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select></p><p>Technician: <select data-tech="${x.id}"><option value="">-- Koi nahi --</option>${techOptions}</select></p>${x.photo_url?`<a href="${x.photo_url}" target="_blank">📷 Photo</a>`:""}</article>`).join("");
+list.innerHTML=data.map(x=>`<article style="margin:15px 0"><b>${x.complaint_number||x.id}</b><br>${x.customer_name}<br>${x.phone}<br>${x.service}<br>${x.problem}<p>Status: <select data-id="${x.id}"><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select></p><p>Technician: <select data-tech="${x.id}"><option value="">-- Koi nahi --</option>${techOptions}</select></p>${x.photo_url?`<a href="${x.photo_url}" target="_blank">📷 Photo</a>`:""}<p><button type="button" class="btn" style="background:#8e44ad;padding:8px 14px;font-size:13px" data-invoice="${x.id}">🧾 Invoice Banayein</button> <a href="invoice.html?complaint=${x.complaint_number}" target="_blank" style="font-size:13px">Invoice dekhein</a></p></article>`).join("");
 list.querySelectorAll("select[data-id]").forEach(s=>{const row=data.find(x=>x.id===s.dataset.id);s.value=row.status;s.onchange=async()=>{const{error}=await supabase.from("complaints").update({status:s.value}).eq("id",s.dataset.id);if(error)alert(error.message)}});
 list.querySelectorAll("select[data-tech]").forEach(s=>{const row=data.find(x=>x.id===s.dataset.tech);s.value=row.technician_id||"";s.onchange=async()=>{const{error}=await supabase.from("complaints").update({technician_id:s.value||null,status:s.value?"Assigned":row.status}).eq("id",s.dataset.tech);if(error)alert(error.message);else load()}});
+list.querySelectorAll("[data-invoice]").forEach(btn=>{
+  btn.onclick=()=>{
+    const row=data.find(x=>x.id===btn.dataset.invoice);
+    openInvoiceForm(row);
+  };
+});
+}
+
+function openInvoiceForm(complaint){
+  const serviceCharge=prompt("Service charge (₹):","0");
+  if(serviceCharge===null)return;
+  const partsCharge=prompt("Parts charge (₹):","0");
+  if(partsCharge===null)return;
+  const labourCharge=prompt("Labour charge (₹):","0");
+  if(labourCharge===null)return;
+  const discount=prompt("Discount (₹, agar koi nahi to 0):","0");
+  if(discount===null)return;
+  const gst=prompt("GST % (agar nahi lagana to 0):","0");
+  if(gst===null)return;
+  saveInvoice(complaint,{
+    service_charge:parseFloat(serviceCharge)||0,
+    parts_charge:parseFloat(partsCharge)||0,
+    labour_charge:parseFloat(labourCharge)||0,
+    discount:parseFloat(discount)||0,
+    gst_percent:parseFloat(gst)||0
+  });
+}
+
+async function saveInvoice(complaint,charges){
+  const subtotal=charges.service_charge+charges.parts_charge+charges.labour_charge-charges.discount;
+  const total=subtotal+(subtotal*charges.gst_percent/100);
+  const invoiceNumber="INV-"+complaint.complaint_number.replace("RR-","");
+  const{error}=await supabase.from("invoices").upsert({
+    complaint_id:complaint.id,
+    invoice_number:invoiceNumber,
+    ...charges,
+    total:Math.round(total*100)/100
+  },{onConflict:"invoice_number"});
+  if(error){alert("❌ "+error.message);return}
+  alert("✅ Invoice ban gaya! 'Invoice dekhein' link se check karein.");
 }
 document.querySelector("#refresh").onclick=load;
 

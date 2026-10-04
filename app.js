@@ -17,7 +17,7 @@ result.innerHTML=`✅ Complaint Number: <b>${no}</b><br>इसे सुरक�
 document.querySelector("#statusForm").addEventListener("submit",async e=>{e.preventDefault();
 const no=document.querySelector("#statusNo").value.trim().toUpperCase();
 const{data,error}=await supabase.from("complaints").select("complaint_number,status,service,created_at").eq("complaint_number",no).maybeSingle();
-document.querySelector("#statusResult").innerHTML=error?`❌ ${error.message}`:data?`✅ ${data.complaint_number}<br>Status: <b>${data.status}</b><br>Service: ${data.service}`:"❌ Complaint नहीं मिली।"});
+document.querySelector("#statusResult").innerHTML=error?`❌ ${error.message}`:data?`✅ ${data.complaint_number}<br>Status: <b>${data.status}</b><br>Service: ${data.service}${data.status==="Completed"?`<br><a href="invoice.html?complaint=${data.complaint_number}" target="_blank">🧾 Invoice देखें</a>`:""}`:"❌ Complaint नहीं मिली।"});
 
 // ---- Catalogue / Rate list display ----
 (async function loadCatalogueDisplay(){

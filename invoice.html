@@ -1,0 +1,16 @@
+<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invoice — Raja Refrigeration</title><link rel="stylesheet" href="style.css">
+<style>
+.inv-box{max-width:480px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px}
+.inv-head{text-align:center;border-bottom:2px dashed var(--line);padding-bottom:16px;margin-bottom:16px}
+.inv-head img{width:60px;height:60px;border-radius:50%;margin-bottom:8px}
+.inv-row{display:flex;justify-content:space-between;padding:6px 0;font-size:15px}
+.inv-total{border-top:2px solid var(--navy);margin-top:10px;padding-top:10px;font-weight:700;font-size:18px;color:var(--navy)}
+@media print{header,footer,.no-print{display:none!important}body{background:#fff}}
+</style></head>
+<body><main><section><div class="wrap" style="max-width:520px">
+<div id="invContent"><p style="text-align:center">Load ho raha hai...</p></div>
+<p class="no-print" style="text-align:center;margin-top:20px"><button class="btn" onclick="window.print()">🖨️ Print / PDF Save Karein</button></p>
+</div></section></main>
+<script type="module" src="invoice.js"></script>
+</body></html>

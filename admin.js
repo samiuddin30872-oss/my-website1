@@ -85,3 +85,55 @@ catForm.addEventListener("submit",async e=>{
     catResult.textContent="❌ "+(err.message||err);
   }
 });
+
+// ---- Technician management + location ----
+const techForm=document.querySelector("#techForm"),techResult=document.querySelector("#techResult"),techListEl=document.querySelector("#techList");
+const SITE_BASE="https://my-website1.samiuddin30872.workers.dev";
+
+function timeAgo(iso){
+  if(!iso)return"Kabhi nahi";
+  const diffMs=Date.now()-new Date(iso).getTime();
+  const mins=Math.floor(diffMs/60000);
+  if(mins<1)return"Abhi-abhi";
+  if(mins<60)return mins+" min pehle";
+  const hrs=Math.floor(mins/60);
+  if(hrs<24)return hrs+" ghante pehle";
+  return Math.floor(hrs/24)+" din pehle";
+}
+
+async function loadTechnicians(){
+  const{data,error}=await supabase.from("technicians").select("*").order("created_at",{ascending:true});
+  if(error){techListEl.textContent=error.message;return}
+  techListEl.innerHTML=(data||[]).map(t=>{
+    const link=`${SITE_BASE}/technician.html?code=${t.access_code}`;
+    const hasLoc=t.latitude&&t.longitude;
+    const mapLink=hasLoc?`https://www.google.com/maps?q=${t.latitude},${t.longitude}`:null;
+    return `<article style="margin:14px 0;border-top:1px solid #ddd;padding-top:10px">
+      <b>${t.name}</b> — ${t.phone} ${t.area?`(${t.area})`:""}<br>
+      <span style="font-size:13px;color:#4d5f7a">Location: ${hasLoc?`<a href="${mapLink}" target="_blank">📍 Map par dekhein</a> (${timeAgo(t.location_updated_at)})`:"Abhi share nahi hui"}</span><br>
+      <span style="font-size:13px;color:#4d5f7a">Sharing link: <a href="${link}" target="_blank">${link}</a></span><br>
+      <button type="button" class="btn" style="background:#c0392b;padding:6px 14px;font-size:13px;margin-top:6px" data-del="${t.id}">Delete</button>
+    </article>`;
+  }).join("")||"<p>Abhi koi technician add nahi hua.</p>";
+  techListEl.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.onclick=async()=>{
+      if(!confirm("Technician delete karein?"))return;
+      await supabase.from("technicians").delete().eq("id",btn.dataset.del);
+      loadTechnicians();
+    };
+  });
+}
+loadTechnicians();
+
+techForm.addEventListener("submit",async e=>{
+  e.preventDefault();
+  techResult.textContent="Save ho raha hai...";
+  const name=document.querySelector("#techName").value.trim();
+  const phone=document.querySelector("#techPhone").value.trim();
+  const area=document.querySelector("#techArea").value.trim();
+  const{error}=await supabase.from("technicians").insert({name,phone,area,status:"Active"});
+  if(error){techResult.textContent="❌ "+error.message;return}
+  techResult.textContent="✅ Add ho gaya!";
+  techForm.reset();
+  loadTechnicians();
+});

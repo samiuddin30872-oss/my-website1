@@ -31,6 +31,26 @@
 </form>
 <div id="catList"></div>
 
+<h2 style="margin-top:40px">♻️ Second Hand Saaman (Bechne ke liye)</h2>
+<form id="shForm" style="margin-bottom:20px">
+  <label>Item Type
+    <select id="shCategory">
+      <option value="AC">AC</option>
+      <option value="Fridge">Refrigerator/Fridge</option>
+      <option value="Washing Machine">Washing Machine</option>
+      <option value="Other">Other</option>
+    </select>
+  </label>
+  <label>Naam/Model<input id="shName" required placeholder="Jaise: Voltas 1.5 Ton Split AC"></label>
+  <label>Condition<input id="shCondition" placeholder="Jaise: 2 saal purana, achi condition"></label>
+  <label>Price<input id="shPrice" required placeholder="Jaise: ₹8000"></label>
+  <label>Description (optional)<textarea id="shDescription"></textarea></label>
+  <label>Photo<input id="shPhoto" type="file" accept="image/*"></label>
+  <button class="btn" type="submit">Item Add Karein</button>
+  <div id="shResult"></div>
+</form>
+<div id="shList"></div>
+
 <h2 style="margin-top:40px">🧑‍🔧 Technicians (Location Tracking)</h2>
 <form id="techForm" style="margin-bottom:20px">
   <label>Naam<input id="techName" required placeholder="Technician ka naam"></label>

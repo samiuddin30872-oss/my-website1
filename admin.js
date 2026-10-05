@@ -132,6 +132,63 @@ catForm.addEventListener("submit",async e=>{
   }
 });
 
+// ---- Second Hand Items management ----
+const shForm=document.querySelector("#shForm"),shResult=document.querySelector("#shResult"),shListEl=document.querySelector("#shList");
+
+async function loadSecondhand(){
+  const{data,error}=await supabase.from("secondhand_items").select("*").order("display_order",{ascending:true}).order("created_at",{ascending:false});
+  if(error){shListEl.textContent=error.message;return}
+  shListEl.innerHTML=(data||[]).map(x=>`<article style="margin:12px 0;border-top:1px solid #ddd;padding-top:10px">
+    ${x.image_url?`<img src="${x.image_url}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px">`:""}
+    <b>${x.name}</b> (${x.category})<br>${x.price} ${x.item_condition?`— ${x.item_condition}`:""}<br>
+    Status: <select data-shstatus="${x.id}"><option>Available</option><option>Sold</option></select>
+    <br><button type="button" class="btn" style="background:#c0392b;padding:6px 14px;font-size:13px;margin-top:6px" data-shdel="${x.id}" data-img="${x.image_url||''}">Delete</button>
+  </article>`).join("")||"<p>Abhi koi item nahi hai.</p>";
+  shListEl.querySelectorAll("[data-shstatus]").forEach(s=>{
+    const row=data.find(x=>x.id===s.dataset.shstatus);
+    s.value=row.status;
+    s.onchange=async()=>{await supabase.from("secondhand_items").update({status:s.value}).eq("id",s.dataset.shstatus)};
+  });
+  shListEl.querySelectorAll("[data-shdel]").forEach(btn=>{
+    btn.onclick=async()=>{
+      if(!confirm("Delete karein?"))return;
+      await supabase.from("secondhand_items").delete().eq("id",btn.dataset.shdel);
+      const img=btn.dataset.img;
+      if(img){const path=img.split("/catalogue-images/")[1];if(path)await supabase.storage.from("catalogue-images").remove([path]);}
+      loadSecondhand();
+    };
+  });
+}
+loadSecondhand();
+
+shForm.addEventListener("submit",async e=>{
+  e.preventDefault();
+  shResult.textContent="Save ho raha hai...";
+  const category=document.querySelector("#shCategory").value;
+  const name=document.querySelector("#shName").value.trim();
+  const item_condition=document.querySelector("#shCondition").value.trim();
+  const price=document.querySelector("#shPrice").value.trim();
+  const description=document.querySelector("#shDescription").value.trim();
+  const photoInput=document.querySelector("#shPhoto");
+  let image_url=null;
+  try{
+    if(photoInput.files[0]){
+      const file=photoInput.files[0];
+      const path=`secondhand-${Date.now()}-${file.name}`;
+      const{error:upErr}=await supabase.storage.from("catalogue-images").upload(path,file);
+      if(upErr)throw upErr;
+      image_url=supabase.storage.from("catalogue-images").getPublicUrl(path).data.publicUrl;
+    }
+    const{error}=await supabase.from("secondhand_items").insert({category,name,item_condition,price,description,image_url});
+    if(error)throw error;
+    shResult.textContent="✅ Add ho gaya!";
+    shForm.reset();
+    loadSecondhand();
+  }catch(err){
+    shResult.textContent="❌ "+(err.message||err);
+  }
+});
+
 // ---- Technician management + location ----
 const techForm=document.querySelector("#techForm"),techResult=document.querySelector("#techResult"),techListEl=document.querySelector("#techList");
 const SITE_BASE="https://my-website1.samiuddin30872.workers.dev";

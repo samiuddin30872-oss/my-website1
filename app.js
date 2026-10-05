@@ -94,6 +94,28 @@ if(data.status==="Completed"){
   </div>`).join("");
 })();
 
+// ---- Second Hand Items display ----
+(async function loadSecondhandDisplay(){
+  const el=document.querySelector("#secondhandDisplay");
+  if(!el)return;
+  const{data,error}=await supabase.from("secondhand_items").select("*").eq("status","Available").order("display_order",{ascending:true}).order("created_at",{ascending:false});
+  if(error||!data||data.length===0){
+    document.querySelector("#secondhand").style.display="none";
+    return;
+  }
+  el.innerHTML=data.map(x=>`<div class="cat-card">
+    ${x.image_url?`<img src="${x.image_url}" alt="${x.name}">`:""}
+    <div class="cat-body">
+      <span class="cat-tag">♻️ ${x.category}</span>
+      <h4>${x.name}</h4>
+      ${x.item_condition?`<p style="margin:2px 0;font-size:13px;color:var(--muted)">${x.item_condition}</p>`:""}
+      ${x.description?`<p style="margin:2px 0;font-size:13px;color:var(--muted)">${x.description}</p>`:""}
+      <div class="cat-price">${x.price}</div>
+      <a class="btn wa" style="margin-top:10px;padding:9px 14px;font-size:13px" href="https://wa.me/919548404815?text=${encodeURIComponent('Mujhe ye chahiye: '+x.name+' ('+x.price+')')}" target="_blank" rel="noopener">WhatsApp पर पूछें</a>
+    </div>
+  </div>`).join("");
+})();
+
 // ---- Catalogue / Rate list display ----
 (async function loadCatalogueDisplay(){
   const el=document.querySelector("#catalogueDisplay");

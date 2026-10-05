@@ -71,7 +71,7 @@ async function saveInvoice(complaint,charges){
   if(error){alert("❌ "+error.message);return}
   alert("✅ Invoice ban gaya! 'Invoice dekhein' link se check karein.");
 }
-document.querySelector("#refresh").onclick=load;
+document.querySelector("#refresh").onclick=()=>{load();loadDashboard();};
 
 const notifBtn=document.querySelector("#enableNotif"),notifStatus=document.querySelector("#notifStatus");
 if("Notification"in window && Notification.permission==="granted"){
@@ -183,3 +183,33 @@ techForm.addEventListener("submit",async e=>{
   techForm.reset();
   loadTechnicians();
 });
+
+// ---- Dashboard analytics ----
+async function loadDashboard(){
+  const{data:complaints}=await supabase.from("complaints").select("created_at,status,service");
+  const{data:invoices}=await supabase.from("invoices").select("total,created_at");
+  if(!complaints)return;
+
+  const now=new Date();
+  const todayStr=now.toDateString();
+  const thisMonth=now.getMonth(),thisYear=now.getFullYear();
+
+  const todayCount=complaints.filter(c=>new Date(c.created_at).toDateString()===todayStr).length;
+  const monthComplaints=complaints.filter(c=>{const d=new Date(c.created_at);return d.getMonth()===thisMonth&&d.getFullYear()===thisYear});
+  const pendingCount=complaints.filter(c=>c.status==="Pending"||c.status==="In Progress"||c.status==="Assigned").length;
+  const completedCount=complaints.filter(c=>c.status==="Completed").length;
+
+  const monthEarning=(invoices||[]).filter(inv=>{const d=new Date(inv.created_at);return d.getMonth()===thisMonth&&d.getFullYear()===thisYear}).reduce((sum,inv)=>sum+Number(inv.total||0),0);
+
+  const serviceCounts={};
+  complaints.forEach(c=>{if(c.service)serviceCounts[c.service]=(serviceCounts[c.service]||0)+1});
+  const topService=Object.entries(serviceCounts).sort((a,b)=>b[1]-a[1])[0];
+
+  document.querySelector("#statToday").textContent=todayCount;
+  document.querySelector("#statMonth").textContent=monthComplaints.length;
+  document.querySelector("#statPending").textContent=pendingCount;
+  document.querySelector("#statCompleted").textContent=completedCount;
+  document.querySelector("#statEarning").textContent="₹"+monthEarning.toLocaleString("en-IN");
+  document.querySelector("#statTopService").textContent=topService?topService[0]:"-";
+}
+loadDashboard();

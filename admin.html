@@ -3,6 +3,16 @@
 <h2>🔐 Raja Refrigeration Admin</h2><form id="login"><label>Username<input id="email" type="text" required></label>
 <label>Password<input id="password" type="password" required></label><button class="btn">Login</button><div id="loginResult"></div></form>
 <div id="dashboard" style="display:none">
+<h2>📊 Dashboard</h2>
+<div id="dashboardStats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px">
+  <div style="background:#eef6ff;border-radius:10px;padding:14px"><div style="font-size:22px;font-weight:700" id="statToday">-</div><div style="font-size:13px;color:#4d5f7a">Aaj ki Complaints</div></div>
+  <div style="background:#eef6ff;border-radius:10px;padding:14px"><div style="font-size:22px;font-weight:700" id="statMonth">-</div><div style="font-size:13px;color:#4d5f7a">Is Mahine ki Complaints</div></div>
+  <div style="background:#fff3e0;border-radius:10px;padding:14px"><div style="font-size:22px;font-weight:700" id="statPending">-</div><div style="font-size:13px;color:#4d5f7a">Pending/In Progress</div></div>
+  <div style="background:#e8f5e9;border-radius:10px;padding:14px"><div style="font-size:22px;font-weight:700" id="statCompleted">-</div><div style="font-size:13px;color:#4d5f7a">Completed</div></div>
+  <div style="background:#f3e5f5;border-radius:10px;padding:14px"><div style="font-size:22px;font-weight:700" id="statEarning">-</div><div style="font-size:13px;color:#4d5f7a">Is Mahine ki Kamai (₹)</div></div>
+  <div style="background:#e0f7fa;border-radius:10px;padding:14px"><div style="font-size:16px;font-weight:700" id="statTopService">-</div><div style="font-size:13px;color:#4d5f7a">Sabse zyada Service</div></div>
+</div>
+
 <h2>Complaints</h2><button class="btn" id="refresh">Refresh</button> <button class="btn" id="enableNotif" style="background:#1fa855">🔔 Notifications Enable Karein</button><div id="notifStatus" style="margin:8px 0"></div><div id="list"></div>
 
 <h2 style="margin-top:40px">📋 Rate List / Catalogue</h2>

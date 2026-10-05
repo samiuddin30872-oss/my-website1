@@ -19,6 +19,7 @@
     <nav class="nav-links">
       <a href="#services">Services</a>
       <a href="#catalogue">Rate List</a>
+      <a href="#booking">Booking</a>
       <a href="#complaint">Complaint</a>
       <a href="#status">Status देखें</a>
       <a href="#reviews">Reviews</a>
@@ -161,6 +162,47 @@
         <label>Address<textarea id="address"></textarea></label>
         <button class="btn" type="submit">Complaint Submit करें</button>
         <div id="result"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="booking" style="background:var(--ice)">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">अपॉइंटमेंट बुक करें</div>
+      <h2>📅 Appointment Book करें</h2>
+      <p>तारीख और समय चुनकर पहले से बुकिंग करें</p>
+    </div>
+    <div class="panel">
+      <form id="bookingForm">
+        <label>नाम<input id="bName" required></label>
+        <label>मोबाइल नंबर<input id="bPhone" type="tel" required></label>
+        <label>Service
+          <select id="bService" required>
+            <option value="">चुनें</option>
+            <option>AC Repair</option>
+            <option>Refrigerator Repair</option>
+            <option>Washing Machine Repair</option>
+            <option>Car AC Service</option>
+            <option>Truck/Canter AC Service</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label>Address<textarea id="bAddress"></textarea></label>
+        <label>तारीख<input id="bDate" type="date" required></label>
+        <label>समय
+          <select id="bTime" required>
+            <option value="">चुनें</option>
+            <option>सुबह 9 - 11 बजे</option>
+            <option>सुबह 11 - 1 बजे</option>
+            <option>दोपहर 1 - 3 बजे</option>
+            <option>दोपहर 3 - 5 बजे</option>
+            <option>शाम 5 - 7 बजे</option>
+          </select>
+        </label>
+        <button class="btn" type="submit">Appointment Book करें</button>
+        <div id="bookingResult"></div>
       </form>
     </div>
   </div>

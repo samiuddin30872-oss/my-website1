@@ -213,3 +213,136 @@ async function loadDashboard(){
   document.querySelector("#statTopService").textContent=topService?topService[0]:"-";
 }
 loadDashboard();
+
+// ---- Bookings ----
+async function loadBookings(){
+  const el=document.querySelector("#bookingsList");
+  const{data,error}=await supabase.from("bookings").select("*").order("booking_date",{ascending:true});
+  if(error){el.textContent=error.message;return}
+  if(!data||data.length===0){el.innerHTML="<p>Koi booking nahi hai.</p>";return}
+  el.innerHTML=data.map(b=>`<article style="margin:14px 0;border-top:1px solid #ddd;padding-top:10px">
+    <b>${b.booking_date}</b> — ${b.booking_time}<br>
+    ${b.customer_name} — ${b.phone}<br>
+    ${b.service}${b.address?`<br>📍 ${b.address}`:""}<br>
+    Status: <select data-bid="${b.id}"><option>Confirmed</option><option>Completed</option><option>Cancelled</option></select>
+  </article>`).join("");
+  el.querySelectorAll("select").forEach(s=>{
+    const row=data.find(b=>b.id===s.dataset.bid);
+    s.value=row.status;
+    s.onchange=async()=>{await supabase.from("bookings").update({status:s.value}).eq("id",s.dataset.bid)};
+  });
+}
+loadBookings();
+
+// ---- AMC Plans ----
+const amcForm=document.querySelector("#amcForm"),amcResult=document.querySelector("#amcResult"),amcListEl=document.querySelector("#amcList");
+
+function addMonths(dateStr,months){
+  const d=new Date(dateStr);
+  d.setMonth(d.getMonth()+Number(months));
+  return d.toISOString().split("T")[0];
+}
+
+async function loadAmc(){
+  const{data,error}=await supabase.from("amc_plans").select("*").order("next_service_date",{ascending:true});
+  if(error){amcListEl.textContent=error.message;return}
+  if(!data||data.length===0){amcListEl.innerHTML="<p>Koi AMC plan nahi hai.</p>";return}
+  const today=new Date().toISOString().split("T")[0];
+  amcListEl.innerHTML=data.map(a=>{
+    const dueSoon=a.next_service_date<=today;
+    return `<article style="margin:14px 0;border-top:1px solid #ddd;padding-top:10px">
+    <b>${a.customer_name}</b> — ${a.phone}<br>
+    ${a.appliance} — ${a.plan_duration_months} mahine ka plan<br>
+    ${a.address?`📍 ${a.address}<br>`:""}
+    <span style="${dueSoon?'color:#c0392b;font-weight:700':''}">Agli Service: ${a.next_service_date}${dueSoon?" ⚠️ Due hai!":""}</span><br>
+    Status: ${a.status}
+    ${dueSoon?`<button type="button" class="btn" style="padding:6px 14px;font-size:13px;margin-top:6px" data-serviced="${a.id}" data-interval="${a.service_interval_months}">✅ Service Ho Gayi (Agli date set karein)</button>`:""}
+    <button type="button" class="btn" style="background:#c0392b;padding:6px 14px;font-size:13px;margin-top:6px" data-amcdel="${a.id}">Delete</button>
+  </article>`;
+  }).join("");
+  amcListEl.querySelectorAll("[data-serviced]").forEach(btn=>{
+    btn.onclick=async()=>{
+      const nextDate=addMonths(today,btn.dataset.interval);
+      await supabase.from("amc_plans").update({next_service_date:nextDate}).eq("id",btn.dataset.serviced);
+      loadAmc();
+    };
+  });
+  amcListEl.querySelectorAll("[data-amcdel]").forEach(btn=>{
+    btn.onclick=async()=>{
+      if(!confirm("AMC plan delete karein?"))return;
+      await supabase.from("amc_plans").delete().eq("id",btn.dataset.amcdel);
+      loadAmc();
+    };
+  });
+}
+loadAmc();
+
+amcForm.addEventListener("submit",async e=>{
+  e.preventDefault();
+  amcResult.textContent="Save ho raha hai...";
+  const startDate=document.querySelector("#amcStart").value;
+  const interval=document.querySelector("#amcInterval").value;
+  const{error}=await supabase.from("amc_plans").insert({
+    customer_name:document.querySelector("#amcName").value,
+    phone:document.querySelector("#amcPhone").value,
+    address:document.querySelector("#amcAddress").value,
+    appliance:document.querySelector("#amcAppliance").value,
+    plan_duration_months:document.querySelector("#amcDuration").value,
+    service_interval_months:interval,
+    start_date:startDate,
+    next_service_date:addMonths(startDate,interval)
+  });
+  if(error){amcResult.textContent="❌ "+error.message;return}
+  amcResult.textContent="✅ AMC Plan add ho gaya!";
+  amcForm.reset();
+  loadAmc();
+});
+
+// ---- Inventory ----
+const invForm=document.querySelector("#invForm"),invResult=document.querySelector("#invResult"),invListEl=document.querySelector("#invList");
+
+async function loadInventory(){
+  const{data,error}=await supabase.from("inventory").select("*").order("part_name",{ascending:true});
+  if(error){invListEl.textContent=error.message;return}
+  if(!data||data.length===0){invListEl.innerHTML="<p>Koi part add nahi hua.</p>";return}
+  invListEl.innerHTML=data.map(p=>{
+    const low=p.quantity<=p.low_stock_alert;
+    return `<article style="margin:14px 0;border-top:1px solid #ddd;padding-top:10px">
+    <b>${p.part_name}</b> — Qty: <span style="${low?'color:#c0392b;font-weight:700':''}">${p.quantity}${low?" ⚠️ Kam hai!":""}</span> — ₹${p.unit_price}/piece<br>
+    <button type="button" class="btn" style="padding:6px 12px;font-size:13px;margin-top:6px" data-qty="${p.id}" data-change="-1">− Use Kiya</button>
+    <button type="button" class="btn" style="padding:6px 12px;font-size:13px;margin-top:6px" data-qty="${p.id}" data-change="1">+ Stock Aaya</button>
+    <button type="button" class="btn" style="background:#c0392b;padding:6px 12px;font-size:13px;margin-top:6px" data-invdel="${p.id}">Delete</button>
+  </article>`;
+  }).join("");
+  invListEl.querySelectorAll("[data-qty]").forEach(btn=>{
+    btn.onclick=async()=>{
+      const row=data.find(p=>p.id===btn.dataset.qty);
+      const newQty=Math.max(0,row.quantity+Number(btn.dataset.change));
+      await supabase.from("inventory").update({quantity:newQty,updated_at:new Date().toISOString()}).eq("id",btn.dataset.qty);
+      loadInventory();
+    };
+  });
+  invListEl.querySelectorAll("[data-invdel]").forEach(btn=>{
+    btn.onclick=async()=>{
+      if(!confirm("Part delete karein?"))return;
+      await supabase.from("inventory").delete().eq("id",btn.dataset.invdel);
+      loadInventory();
+    };
+  });
+}
+loadInventory();
+
+invForm.addEventListener("submit",async e=>{
+  e.preventDefault();
+  invResult.textContent="Save ho raha hai...";
+  const{error}=await supabase.from("inventory").insert({
+    part_name:document.querySelector("#invName").value,
+    quantity:parseInt(document.querySelector("#invQty").value)||0,
+    low_stock_alert:parseInt(document.querySelector("#invAlert").value)||3,
+    unit_price:parseFloat(document.querySelector("#invPrice").value)||0
+  });
+  if(error){invResult.textContent="❌ "+error.message;return}
+  invResult.textContent="✅ Part add ho gaya!";
+  invForm.reset();
+  loadInventory();
+});

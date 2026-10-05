@@ -14,6 +14,24 @@ service:document.querySelector("#service").value,problem:document.querySelector(
 const{error}=await supabase.from("complaints").insert(row);
 if(error){result.textContent="Complaint error: "+error.message;return}
 result.innerHTML=`✅ Complaint Number: <b>${no}</b><br>इसे सुरक्षित रखें।`;form.reset()});
+document.querySelector("#bookingForm").addEventListener("submit",async e=>{e.preventDefault();
+const bResult=document.querySelector("#bookingResult");
+bResult.textContent="Book ho raha hai...";
+const row={
+  customer_name:document.querySelector("#bName").value,
+  phone:document.querySelector("#bPhone").value,
+  service:document.querySelector("#bService").value,
+  address:document.querySelector("#bAddress").value,
+  booking_date:document.querySelector("#bDate").value,
+  booking_time:document.querySelector("#bTime").value,
+  status:"Confirmed"
+};
+const{error}=await supabase.from("bookings").insert(row);
+if(error){bResult.textContent="❌ "+error.message;return}
+bResult.innerHTML=`✅ Appointment book ho gaya!<br>${row.booking_date} — ${row.booking_time}`;
+document.querySelector("#bookingForm").reset();
+});
+
 document.querySelector("#statusForm").addEventListener("submit",async e=>{e.preventDefault();
 const no=document.querySelector("#statusNo").value.trim().toUpperCase();
 const{data,error}=await supabase.from("complaints").select("id,complaint_number,status,service,created_at,customer_name").eq("complaint_number",no).maybeSingle();

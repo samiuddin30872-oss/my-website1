@@ -40,5 +40,33 @@
   <div id="techResult"></div>
 </form>
 <div id="techList"></div>
+
+<h2 style="margin-top:40px">📅 Bookings</h2>
+<div id="bookingsList"></div>
+
+<h2 style="margin-top:40px">🔧 AMC / Annual Service Plans</h2>
+<form id="amcForm" style="margin-bottom:20px">
+  <label>Customer Naam<input id="amcName" required></label>
+  <label>Mobile<input id="amcPhone" required></label>
+  <label>Address<textarea id="amcAddress"></textarea></label>
+  <label>Appliance (jaise: AC, Fridge)<input id="amcAppliance" required></label>
+  <label>Plan kitne mahine ka<select id="amcDuration"><option value="3">3 mahine</option><option value="6">6 mahine</option><option value="12" selected>12 mahine</option></select></label>
+  <label>Service kitne-kitne mahine mein<select id="amcInterval"><option value="1">Har mahine</option><option value="3" selected>Har 3 mahine</option><option value="6">Har 6 mahine</option></select></label>
+  <label>Start Date<input id="amcStart" type="date" required></label>
+  <button class="btn" type="submit">AMC Plan Add Karein</button>
+  <div id="amcResult"></div>
+</form>
+<div id="amcList"></div>
+
+<h2 style="margin-top:40px">🧰 Spare Parts Inventory</h2>
+<form id="invForm" style="margin-bottom:20px">
+  <label>Part ka naam<input id="invName" required></label>
+  <label>Quantity<input id="invQty" type="number" required value="1"></label>
+  <label>Low stock alert (kitna bachne par warning de)<input id="invAlert" type="number" value="3"></label>
+  <label>Price per piece (₹)<input id="invPrice" type="number" value="0"></label>
+  <button class="btn" type="submit">Part Add Karein</button>
+  <div id="invResult"></div>
+</form>
+<div id="invList"></div>
 </div>
 </div></section></main><script type="module" src="admin.js"></script></body></html>

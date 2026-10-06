@@ -34,7 +34,7 @@ async function loadMyComplaints(){
   if(error){myComplaintsEl.textContent=error.message;return}
   if(!data||data.length===0){myComplaintsEl.innerHTML="<p>Abhi koi complaint assign nahi hui.</p>";return}
   myComplaintsEl.innerHTML=data.map(x=>`<article style="margin:14px 0;border-top:1px solid #ddd;padding-top:10px">
-    <b>${x.complaint_number}</b><br>${x.customer_name} — ${x.phone}<br>${x.service}<br>${x.problem}
+    <b>${x.complaint_number}</b> <span style="font-size:12px;color:#4d5f7a">(${new Date(x.created_at).toLocaleString("hi-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})})</span><br>${x.customer_name} — ${x.phone}<br>${x.service}<br>${x.problem}
     ${x.address?`<br>📍 ${x.address}`:""}
     ${x.latitude&&x.longitude?`<br><a href="https://www.google.com/maps/dir/?api=1&destination=${x.latitude},${x.longitude}" target="_blank">🗺️ Yahan tak Navigate Karein</a>`:""}
     <p>Status: <select data-id="${x.id}"><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select></p>

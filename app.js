@@ -3,17 +3,31 @@ import{SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY}from"./supabase.js";
 const supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const form=document.querySelector("#complaintForm"),result=document.querySelector("#result");
 const complaintNo=()=>"RR-"+Math.floor(100000+Math.random()*900000);
+
+function getLocation(){
+  return new Promise((resolve)=>{
+    if(!("geolocation"in navigator)){resolve(null);return}
+    navigator.geolocation.getCurrentPosition(
+      pos=>resolve({latitude:pos.coords.latitude,longitude:pos.coords.longitude}),
+      ()=>resolve(null),
+      {enableHighAccuracy:true,timeout:8000,maximumAge:60000}
+    );
+  });
+}
+
 form.addEventListener("submit",async e=>{e.preventDefault();result.textContent="Submitting...";
 const no=complaintNo(),photo=document.querySelector("#photo").files[0];let photo_url=null;
 if(photo){const safe=photo.name.replace(/[^a-zA-Z0-9._-]/g,"_"),path=`${no}/${Date.now()}-${safe}`;
 const up=await supabase.storage.from("complaint-photos").upload(path,photo);
 if(up.error){result.textContent="Photo upload error: "+up.error.message;return}
 photo_url=supabase.storage.from("complaint-photos").getPublicUrl(path).data.publicUrl}
+const location=await getLocation();
 const row={complaint_number:no,customer_name:document.querySelector("#name").value,phone:document.querySelector("#phone").value,
-service:document.querySelector("#service").value,problem:document.querySelector("#problem").value,photo_url,address:document.querySelector("#address").value,status:"Pending"};
+service:document.querySelector("#service").value,problem:document.querySelector("#problem").value,photo_url,address:document.querySelector("#address").value,status:"Pending",
+latitude:location?location.latitude:null,longitude:location?location.longitude:null};
 const{error}=await supabase.from("complaints").insert(row);
 if(error){result.textContent="Complaint error: "+error.message;return}
-result.innerHTML=`✅ Complaint Number: <b>${no}</b><br>इसे सुरक्षित रखें।`;form.reset()});
+result.innerHTML=`✅ Complaint Number: <b>${no}</b><br>इसे सुरक्षित रखें।${location?"<br>📍 आपकी location भी save हो गई।":""}`;form.reset()});
 document.querySelector("#bookingForm").addEventListener("submit",async e=>{e.preventDefault();
 const bResult=document.querySelector("#bookingResult");
 bResult.textContent="Book ho raha hai...";

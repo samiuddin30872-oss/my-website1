@@ -36,6 +36,7 @@ async function loadMyComplaints(){
   myComplaintsEl.innerHTML=data.map(x=>`<article style="margin:14px 0;border-top:1px solid #ddd;padding-top:10px">
     <b>${x.complaint_number}</b><br>${x.customer_name} — ${x.phone}<br>${x.service}<br>${x.problem}
     ${x.address?`<br>📍 ${x.address}`:""}
+    ${x.latitude&&x.longitude?`<br><a href="https://www.google.com/maps/dir/?api=1&destination=${x.latitude},${x.longitude}" target="_blank">🗺️ Yahan tak Navigate Karein</a>`:""}
     <p>Status: <select data-id="${x.id}"><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select></p>
   </article>`).join("");
   myComplaintsEl.querySelectorAll("select").forEach(s=>{

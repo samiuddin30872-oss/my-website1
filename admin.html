@@ -1,8 +1,29 @@
 <!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Raja Refrigeration Admin</title><link rel="stylesheet" href="style.css"></head><body><main><section><div class="wrap">
+<title>Raja Refrigeration Admin</title><link rel="stylesheet" href="style.css">
+<style>
+.admin-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0;position:sticky;top:0;background:#fff;padding:10px 0;z-index:5;border-bottom:1px solid var(--line)}
+.admin-tab-btn{background:var(--ice);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer}
+.admin-tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.admin-panel-section{display:none}
+.admin-panel-section.active{display:block}
+</style>
+</head><body><main><section><div class="wrap">
 <h2>🔐 Raja Refrigeration Admin</h2><form id="login"><label>Username<input id="email" type="text" required></label>
 <label>Password<input id="password" type="password" required></label><button class="btn">Login</button><div id="loginResult"></div></form>
 <div id="dashboard" style="display:none">
+
+<div class="admin-tabs">
+  <button type="button" class="admin-tab-btn active" data-tab="tab-dashboard">📊 Dashboard</button>
+  <button type="button" class="admin-tab-btn" data-tab="tab-complaints">📝 Complaints</button>
+  <button type="button" class="admin-tab-btn" data-tab="tab-catalogue">📋 Rate List</button>
+  <button type="button" class="admin-tab-btn" data-tab="tab-secondhand">♻️ Second Hand</button>
+  <button type="button" class="admin-tab-btn" data-tab="tab-technicians">🧑‍🔧 Technicians</button>
+  <button type="button" class="admin-tab-btn" data-tab="tab-bookings">📅 Bookings</button>
+  <button type="button" class="admin-tab-btn" data-tab="tab-amc">🔧 AMC Plans</button>
+  <button type="button" class="admin-tab-btn" data-tab="tab-inventory">🧰 Inventory</button>
+</div>
+
+<div id="tab-dashboard" class="admin-panel-section active">
 <h2>📊 Dashboard</h2>
 <div id="dashboardStats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px">
   <div style="background:#eef6ff;border-radius:10px;padding:14px"><div style="font-size:22px;font-weight:700" id="statToday">-</div><div style="font-size:13px;color:#4d5f7a">Aaj ki Complaints</div></div>
@@ -12,10 +33,14 @@
   <div style="background:#f3e5f5;border-radius:10px;padding:14px"><div style="font-size:22px;font-weight:700" id="statEarning">-</div><div style="font-size:13px;color:#4d5f7a">Is Mahine ki Kamai (₹)</div></div>
   <div style="background:#e0f7fa;border-radius:10px;padding:14px"><div style="font-size:16px;font-weight:700" id="statTopService">-</div><div style="font-size:13px;color:#4d5f7a">Sabse zyada Service</div></div>
 </div>
+</div>
 
+<div id="tab-complaints" class="admin-panel-section">
 <h2>Complaints</h2><button class="btn" id="refresh">Refresh</button> <button class="btn" id="enableNotif" style="background:#1fa855">🔔 Notifications Enable Karein</button><div id="notifStatus" style="margin:8px 0"></div><div id="list"></div>
+</div>
 
-<h2 style="margin-top:40px">📋 Rate List / Catalogue</h2>
+<div id="tab-catalogue" class="admin-panel-section">
+<h2>📋 Rate List / Catalogue</h2>
 <form id="catForm" style="margin-bottom:20px">
   <label>Category
     <select id="catCategory">
@@ -30,8 +55,10 @@
   <div id="catResult"></div>
 </form>
 <div id="catList"></div>
+</div>
 
-<h2 style="margin-top:40px">♻️ Second Hand Saaman (Bechne ke liye)</h2>
+<div id="tab-secondhand" class="admin-panel-section">
+<h2>♻️ Second Hand Saaman (Bechne ke liye)</h2>
 <form id="shForm" style="margin-bottom:20px">
   <label>Item Type
     <select id="shCategory">
@@ -50,8 +77,10 @@
   <div id="shResult"></div>
 </form>
 <div id="shList"></div>
+</div>
 
-<h2 style="margin-top:40px">🧑‍🔧 Technicians (Location Tracking)</h2>
+<div id="tab-technicians" class="admin-panel-section">
+<h2>🧑‍🔧 Technicians (Location Tracking)</h2>
 <form id="techForm" style="margin-bottom:20px">
   <label>Naam<input id="techName" required placeholder="Technician ka naam"></label>
   <label>Mobile<input id="techPhone" required placeholder="Mobile number"></label>
@@ -60,11 +89,15 @@
   <div id="techResult"></div>
 </form>
 <div id="techList"></div>
+</div>
 
-<h2 style="margin-top:40px">📅 Bookings</h2>
+<div id="tab-bookings" class="admin-panel-section">
+<h2>📅 Bookings</h2>
 <div id="bookingsList"></div>
+</div>
 
-<h2 style="margin-top:40px">🔧 AMC / Annual Service Plans</h2>
+<div id="tab-amc" class="admin-panel-section">
+<h2>🔧 AMC / Annual Service Plans</h2>
 <form id="amcForm" style="margin-bottom:20px">
   <label>Customer Naam<input id="amcName" required></label>
   <label>Mobile<input id="amcPhone" required></label>
@@ -77,8 +110,10 @@
   <div id="amcResult"></div>
 </form>
 <div id="amcList"></div>
+</div>
 
-<h2 style="margin-top:40px">🧰 Spare Parts Inventory</h2>
+<div id="tab-inventory" class="admin-panel-section">
+<h2>🧰 Spare Parts Inventory</h2>
 <form id="invForm" style="margin-bottom:20px">
   <label>Part ka naam<input id="invName" required></label>
   <label>Quantity<input id="invQty" type="number" required value="1"></label>
@@ -88,5 +123,7 @@
   <div id="invResult"></div>
 </form>
 <div id="invList"></div>
+</div>
+
 </div>
 </div></section></main><script type="module" src="admin.js"></script></body></html>
